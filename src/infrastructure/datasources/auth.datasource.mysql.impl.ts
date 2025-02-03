@@ -4,13 +4,16 @@ import { UserMapper } from '../mappers/user.mapper';
 import { BcryptAdapter, envs } from '../../config';
 import { LoginUserDto } from '../../domain/dtos/login-user.dto';
 import { MysqlDatabase } from '../../data/mysql/mysql-database';
+import mysql, { FieldPacket, QueryResult, RowDataPacket } from 'mysql2/promise';
 
-// IMPLEMENTAMOS MONGO
+// IMPLEMENTAMOS MYSQL
 
 type HashFunction = (password: string) => string;
 type CompareFunction = (password: string, hashed: string) => boolean;
 
-export class AuthDatasourceMongoImpl implements AuthDatasource{
+export class AuthDatasourceMysqlImpl implements AuthDatasource {
+
+    private connection?: mysql.Connection;
 
     constructor(
         private readonly hashPassword: HashFunction = BcryptAdapter.hash,
@@ -19,9 +22,12 @@ export class AuthDatasourceMongoImpl implements AuthDatasource{
         this.connectDatabase();
     }
     async connectDatabase(){
-        await MongoDatabase.connect({
-            mongoUrl:envs.MONGO_URL,
-            dbName: envs.MONGO_DB_NAME
+        
+        this.connection = await MysqlDatabase.connect({
+            host: envs.MYSQL_HOST,
+            user: envs.MYSQL_USER,
+            dbName: envs.MYSQL_DB_NAME,
+            password: envs.MYSQL_PASS
         });
     }
 
@@ -60,16 +66,34 @@ export class AuthDatasourceMongoImpl implements AuthDatasource{
         const {email, password} = loginUserDto;
 
         try {
-            // 1. Verificar si el email existe
-            const user = await UserModel.findOne({email:email});
-            if(!user) throw CustomError.badRequest('Correo no registrado');
 
+            // const values = [username, password]
+            // 
+            console.log('Desde mysql');
+            const [results] = await this.connection!.execute<UserEntity[] & RowDataPacket[]>("SELECT * FROM Usuario WHERE correo = ? AND clave = ?", [email, password]);
+            console.log(results);
+            
+            if(!results || results.length == 0) throw CustomError.badRequest('Usuario no registrado');
+
+            // console.log(results);
+            const userdb = results as UserEntity[];
+            this.connection?.end()
+
+            const user = {
+                id_usuario: results[0].id_usuario, 
+                tipo_usuario: results[0].tipo_usuario,
+                nombre: results[0].nombre, 
+                correo: results[0].correo, 
+                clave: results[0].clave, 
+                direccion: results[0].direccion
+            }
             // 2. Comparamos las contraseñas
-            const isMatching = this.comparePassword(password, user.password);
-            if(!isMatching) throw CustomError.badRequest('Correo o contraseña son incorrectos');
+            // const isMatching = this.comparePassword(password, user.password);
+            // if(!isMatching) throw CustomError.badRequest('Correo o contraseña son incorrectos');
 
             // 3. Mapear la respuesta a nuestra entidad
-            return UserMapper.userEntityFromObject(user);
+            // return UserMapper.userEntityFromObject(user);
+            return userdb[0];
 
         }
         catch (error) {
@@ -81,3 +105,22 @@ export class AuthDatasourceMongoImpl implements AuthDatasource{
     }
 }
 
+export class UserEntity2 implements RowDataPacket {
+
+    constructor(
+        public id_usuario: string,
+        public tipo_usuario: string,
+        public nombre: string,
+        public correo: string,
+        public clave: string,
+        public direccion: string,
+    ){
+
+    }
+    [column: number]: any;
+    [column: string]: any;
+    
+    ['constructor']: {name: 'RowDataPacket'} = {
+        name: 'RowDataPacket'
+    };
+}

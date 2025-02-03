@@ -2,23 +2,23 @@ import { Validators } from '../../config';
 
 export class LoginUserDto {
     constructor(
-        public correo: string,
+        public email: string,
         public password: string
     ) {}
-
+    // retriana un arreglo con un string del mensaje de error y el objeto de login
     static create( object: { [ key: string ]: any; } ): [ string?, LoginUserDto?] {
 
-        const { correo, password } = object;
+        const { email, password } = object;
 
-        if ( !correo ) return [ 'Missing email' ];
-        if ( !Validators.email.test( correo ) ) return [ 'Email is not valid' ];
+        if ( !email ) return [ 'Missing email' ];
+        if ( !Validators.email.test( email ) ) return [ 'Email is not valid' ];
         if ( !password ) return ['Missing password'];
         if ( password.length < 6 ) return ['Password too short'];
 
 
         return [
-            undefined,
-            new LoginUserDto(correo, password)
+            undefined, // mensaje de error
+            new LoginUserDto(email, password)
         ];
     }
 }
