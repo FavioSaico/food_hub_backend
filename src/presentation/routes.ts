@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { AuthController } from "./controller";
-import { AuthDatasourceMongoImpl, AuthRepositoryImpl } from "../infrastructure";
+import { AuthRepositoryImpl } from "../infrastructure";
 import { Request, Response } from "express"
 import { AuthDatasourceMysqlImpl } from "../infrastructure/datasources/auth.datasource.mysql.impl";
 export class AppRoutes{
