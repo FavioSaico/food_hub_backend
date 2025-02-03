@@ -15,13 +15,13 @@ export class RegisterUserDto{
         const {nombre, tipo_usuario, correo, clave, direccion} = object;
         
         // Validaciones
-        if (!nombre) return ['Missing name'];
-        if (!tipo_usuario) return ['Missing type user'];
-        if (!direccion) return ['Missing address'];
-        if (!correo) return ['Missing email'];
-        if (!Validators.email.test(correo)) return ['Email is not valid'];
-        if (!clave) return ['Missing password'];
-        if (clave.length < 6) return ['Password to short'];
+        if (!nombre) return ['Ingrese el nombre'];
+        if (!tipo_usuario) return ['Defina el tipo de usuario'];
+        if (!direccion) return ['Ingrese la dirección'];
+        if (!correo) return ['Ingrese el correo'];
+        if (!Validators.email.test(correo)) return ['Correo no es válido'];
+        if (!clave) return ['Ingrese la contraseña'];
+        if (clave.length < 6) return ['Contraseña debe tener 6 o más caracteres'];
 
         return [ 
             undefined, // mensaje de error

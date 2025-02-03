@@ -18,7 +18,13 @@ export class MysqlDatabase{
                 host: host,
                 user: user,
                 database: dbName,
-                password: password
+                password: password,
+                typeCast: function (field, next) {
+                    if (field.type === 'NEWDECIMAL') {
+                        return Number(field.string());
+                    }
+                    return next();
+                }
             });
             console.log('MySQL connected');
             return connection;
