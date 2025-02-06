@@ -20,6 +20,19 @@ export class PurchaseController{
         return res.status(500).json({ error: 'Internal Server Error' });
     }
 
+    getPurchase = async(req: Request, res:Response) => {
+
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Methods", "GET");
+        res.header("Access-Control-Allow-Headers", "Content-Type");
+        
+        const {id} = req.params;
+
+        this.purchaseRepostory.getPurchase(Number(id))
+            .then(typesPayment => res.json(typesPayment))
+            .catch(error => this.handleError(error, res));
+    }
+
     typesPayment = async(req: Request, res:Response) => {
 
         res.header("Access-Control-Allow-Origin", "*");

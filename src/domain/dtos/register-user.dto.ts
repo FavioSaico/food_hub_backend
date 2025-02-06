@@ -12,7 +12,7 @@ export class RegisterUserDto{
     }
 
     static create(object:{ [key:string]:any }):[string?, RegisterUserDto?]{
-        const {nombre, tipo_usuario, correo, clave, direccion} = object;
+        const {tipo_usuario, nombre, correo, clave, direccion} = object;
         
         // Validaciones
         if (!nombre) return ['Ingrese el nombre'];
@@ -25,7 +25,7 @@ export class RegisterUserDto{
 
         return [ 
             undefined, // mensaje de error
-            new RegisterUserDto(nombre,tipo_usuario, correo.toLowerCase(), clave, direccion) // creo la instancia usando el constructor privado recien
+            new RegisterUserDto(tipo_usuario, nombre, correo.toLowerCase(), clave, direccion) // creo la instancia usando el constructor privado recien
         ]
     }
 }

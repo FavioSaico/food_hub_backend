@@ -9,7 +9,9 @@ export class PurchaseRepositoryImpl implements PurchaseRepository{
     constructor(
         private readonly purchaseDatasource: PurchaseDatasource
     ){}
-    
+    getPurchase(id:number) {
+        return this.purchaseDatasource.getPurchase(id);
+    }
     getTypesPayment(): Promise<PaymentTypeEntity[]> {
         return this.purchaseDatasource.getTypesPayment();
     }

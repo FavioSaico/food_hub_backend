@@ -47,6 +47,7 @@ export class AppRoutes{
 
         router.get('/api/purchase/typesPayment', purchaseController.typesPayment);
         router.get('/api/purchase/typesPruchase', purchaseController.typesPurchase);
+        router.get('/api/purchase/:id', purchaseController.getPurchase);
 
         router.get('/api/shared/headquarters', sharedController.headquarters);
         router.get('/api/shared/states', sharedController.states);
