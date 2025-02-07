@@ -2,6 +2,7 @@ import { Request, Response } from "express"
 import { CustomError } from "../domain";
 import { PurchaseRepositoryImpl } from "../infrastructure";
 import { RegisterPurchaseDto } from "../domain/dtos/purchase-register.dto";
+import { UpdateStatePurchaseDto } from "../domain/dtos/purchase-update.dto";
 
 // creamos una clase controlador
 export class PurchaseController{
@@ -31,6 +32,20 @@ export class PurchaseController{
         if(error) return res.status(400).json({error});
 
         this.purchaseRepostory.registerPurchase(registarPurchaseDto!)
+            .then(id_compra => res.json({id_compra}))
+            .catch(error => this.handleError(error, res));
+    }
+
+    updateStatePurchase = async(req: Request, res:Response) => {
+    
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Methods", "POST");
+        res.header("Access-Control-Allow-Headers", "Content-Type");
+
+        const [error, updateStatePurchaseDto] = UpdateStatePurchaseDto.create(req.body);
+        if(error) return res.status(400).json({error});
+
+        this.purchaseRepostory.updateStatePurchase(updateStatePurchaseDto!)
             .then(id_compra => res.json({id_compra}))
             .catch(error => this.handleError(error, res));
     }

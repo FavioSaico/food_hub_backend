@@ -1,6 +1,6 @@
 import { CustomError, UserEntity } from '../../domain';
 import MySQLConnection from "../../data/mysql/mysql-adapter";
-import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
+import { ResultSetHeader, RowDataPacket, OkPacket } from 'mysql2/promise';
 import { PurchaseDatasource } from '../../domain/datasources/purchase.datasource';
 import { PaymentTypeEntity } from '../../domain/entities/payment-type-entity';
 import { PurchaseTypeEntity } from '../../domain/entities/purchase-type-entity';
@@ -9,6 +9,7 @@ import { FoodEntity } from '../../domain/entities/food-entity';
 import { StateEntity } from '../../domain/entities/state-entity';
 import { HeadquartersEntity } from '../../domain/entities/headquarters-entity';
 import { RegisterPurchaseDto } from '../../domain/dtos/purchase-register.dto';
+import { UpdateStatePurchaseDto } from '../../domain/dtos/purchase-update.dto';
 
 export class PurchaseDatasourceMysqlImpl implements PurchaseDatasource {
 
@@ -109,6 +110,27 @@ export class PurchaseDatasourceMysqlImpl implements PurchaseDatasource {
             throw CustomError.internalServer();
         }
     };
+
+    async updateStatePurchase(updatePurchaseDto: UpdateStatePurchaseDto):Promise<number>{
+
+        try {
+        
+            const resultPurchase = await MySQLConnection.query<OkPacket>(
+                "UPDATE Compra SET id_estado = ? WHERE id_compra = ? ;",
+                [updatePurchaseDto.id_estado, updatePurchaseDto.id_compra]
+            );
+
+            return updatePurchaseDto.id_compra
+        }
+        catch (error) {
+            if (error instanceof CustomError){
+                throw error;
+            }
+            throw CustomError.internalServer();
+        }
+        
+    };
+
     async getTypesPayment():Promise<PaymentTypeEntity[]> {
         try {
         
