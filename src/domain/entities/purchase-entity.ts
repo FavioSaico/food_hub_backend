@@ -1,3 +1,5 @@
+import { FoodResponseDto } from "../dtos/food-response-detail.dto";
+import { UserResponseDto } from "../dtos/user-response.dto";
 import { FoodEntity } from "./food-entity";
 import { HeadquartersEntity } from "./headquarters-entity";
 import { PaymentTypeEntity } from "./payment-type-entity";
@@ -8,7 +10,7 @@ import { UserEntity } from "./user-entity";
 export class PurchaseEntity{
     constructor(
         public id_compra: number,
-        public usuario: UserEntity,
+        public usuario: UserResponseDto,
         public tipo_compra: PurchaseTypeEntity,
         public tipo_pago: PaymentTypeEntity,
         public estado: StateEntity,
@@ -16,7 +18,7 @@ export class PurchaseEntity{
         public costo_subtotal: number,
         public costo_total: number,
         public costo_delivery: number,
-        public lista_comidas: FoodEntity[]
+        public lista_comidas: FoodResponseDto[]
     ){
     }
 }

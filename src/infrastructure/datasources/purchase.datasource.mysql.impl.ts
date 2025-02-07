@@ -10,6 +10,8 @@ import { StateEntity } from '../../domain/entities/state-entity';
 import { HeadquartersEntity } from '../../domain/entities/headquarters-entity';
 import { RegisterPurchaseDto } from '../../domain/dtos/purchase-register.dto';
 import { UpdateStatePurchaseDto } from '../../domain/dtos/purchase-update.dto';
+import { FoodResponseDto } from '../../domain/dtos/food-response-detail.dto';
+import { UserResponseDto } from '../../domain/dtos/user-response.dto';
 
 export class PurchaseDatasourceMysqlImpl implements PurchaseDatasource {
 
@@ -17,10 +19,16 @@ export class PurchaseDatasourceMysqlImpl implements PurchaseDatasource {
     }
     async getPurchase(id: number):Promise<PurchaseEntity> {
         try {
-        
+            console.log('antes');
             const results = await MySQLConnection.query<RowDataPacket[]>(
                 `
-                SELECT * FROM Compra c
+                SELECT c.id_compra,c.id_usuario,c.id_tipo_compra,c.id_tipo_pago,c.id_estado,
+                c.id_sede,c.costo_subtotal,c.costo_total,c.costo_delivery,
+                u.tipo_usuario,u.nombre,u.correo,u.direccion,
+                tc.tipo_compra,tp.tipo_pago,e.tipo_estado,s.sede,
+                dc.id_comida,dc.cantidad,dc.costo,
+                co.comida,co.tipo_comida,co.precio,co.imagen
+                FROM Compra c
                 INNER JOIN Usuario u on u.id_usuario = c.id_usuario
                 INNER JOIN Tipo_Compra tc on tc.id_tipo_compra = c.id_tipo_compra
                 INNER JOIN Tipo_Pago tp on tp.id_tipo_pago = c.id_tipo_pago
@@ -32,28 +40,27 @@ export class PurchaseDatasourceMysqlImpl implements PurchaseDatasource {
                 `, 
                 [id]
             );
-
-            let listFood : FoodEntity[] = [];
+            
+            let listFood : FoodResponseDto[] = [];
             results.forEach( (v)=> {
-                listFood.push(new FoodEntity(
+                listFood.push(new FoodResponseDto(
                     v['id_comida'],
                     v['comida'],
                     v['tipo_comida'],
-                    v['descripcion'],
-                    v['tiempo'],
                     Number(v['precio']),
+                    Number(v['cantidad']),
+                    Number(v['costo']),
                     v['imagen'],
                 ));
             });
 
             const purchase = new PurchaseEntity (
                 Number(results[0]['id_compra']),
-                new UserEntity(
+                new UserResponseDto(
                     results[0]['id_usuario'],
                     results[0]['tipo_usuario'],
                     results[0]['nombre'],
                     results[0]['correo'],
-                    results[0]['clave'],
                     results[0]['direccion']
                 ),
                 new PurchaseTypeEntity(results[0]['id_tipo_compra'],results[0]['tipo_compra']),

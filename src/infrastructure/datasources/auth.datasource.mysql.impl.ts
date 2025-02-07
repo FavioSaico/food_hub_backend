@@ -3,6 +3,7 @@ import MySQLConnection from "../../data/mysql/mysql-adapter";
 import { BcryptAdapter } from '../../config';
 import { LoginUserDto } from '../../domain/dtos/login-user.dto';
 import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
+import { UserResponseDto } from '../../domain/dtos/user-response.dto';
 
 type HashFunction = (password: string) => string;
 type CompareFunction = (password: string, hashed: string) => boolean;
@@ -16,7 +17,7 @@ export class AuthDatasourceMysqlImpl implements AuthDatasource {
     }
 
     // recibe un RegisterUserDto y retorna un UserEntity
-    async register(registerUserDto: RegisterUserDto): Promise<UserEntity> {
+    async register(registerUserDto: RegisterUserDto): Promise<UserResponseDto> {
         const {nombre, tipo_usuario, correo, clave, direccion} = registerUserDto;
 
         try {
@@ -45,7 +46,7 @@ export class AuthDatasourceMysqlImpl implements AuthDatasource {
             const user = userInsert[0] as UserEntity;
 
             // 3. Mapear la respuesta a nuestra entidad
-            return user;
+            return new UserResponseDto(user.id_usuario, user.tipo_usuario, user.nombre,user.correo,user.direccion);
 
         }
         catch (error) {
@@ -56,7 +57,7 @@ export class AuthDatasourceMysqlImpl implements AuthDatasource {
         }
     }
 
-    async login(loginUserDto: LoginUserDto): Promise<UserEntity> {
+    async login(loginUserDto: LoginUserDto): Promise<UserResponseDto> {
         const {correo, clave} = loginUserDto;
 
         try {
@@ -74,7 +75,7 @@ export class AuthDatasourceMysqlImpl implements AuthDatasource {
             const isMatching = this.comparePassword(clave, user.clave);
             if(!isMatching) throw CustomError.badRequest('Correo o contraseña son incorrectos');
 
-            return user;
+            return new UserResponseDto(user.id_usuario, user.tipo_usuario, user.nombre,user.correo,user.direccion);
         }
         catch (error) {
             if (error instanceof CustomError){
