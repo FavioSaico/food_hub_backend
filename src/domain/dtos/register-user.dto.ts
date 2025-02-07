@@ -25,7 +25,7 @@ export class RegisterUserDto{
 
         return [ 
             undefined, // mensaje de error
-            new RegisterUserDto(tipo_usuario, nombre, correo.toLowerCase(), clave, direccion) // creo la instancia usando el constructor privado recien
+            new RegisterUserDto(tipo_usuario,nombre, correo.toLowerCase(), clave, direccion) // creo la instancia usando el constructor privado recien
         ]
     }
 }

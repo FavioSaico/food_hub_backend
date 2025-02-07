@@ -1,6 +1,7 @@
 import { Request, Response } from "express"
 import { CustomError } from "../domain";
 import { PurchaseRepositoryImpl } from "../infrastructure";
+import { RegisterPurchaseDto } from "../domain/dtos/purchase-register.dto";
 
 // creamos una clase controlador
 export class PurchaseController{
@@ -18,6 +19,20 @@ export class PurchaseController{
 
         console.log(error); // Winston logger
         return res.status(500).json({ error: 'Internal Server Error' });
+    }
+
+    registerPurchase = async(req: Request, res:Response) => {
+    
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Methods", "POST");
+        res.header("Access-Control-Allow-Headers", "Content-Type");
+
+        const [error, registarPurchaseDto] = RegisterPurchaseDto.create(req.body);
+        if(error) return res.status(400).json({error});
+
+        this.purchaseRepostory.registerPurchase(registarPurchaseDto!)
+            .then(id_compra => res.json({id_compra}))
+            .catch(error => this.handleError(error, res));
     }
 
     getPurchase = async(req: Request, res:Response) => {

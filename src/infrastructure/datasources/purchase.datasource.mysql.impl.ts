@@ -8,6 +8,7 @@ import { PurchaseEntity } from '../../domain/entities/purchase-entity';
 import { FoodEntity } from '../../domain/entities/food-entity';
 import { StateEntity } from '../../domain/entities/state-entity';
 import { HeadquartersEntity } from '../../domain/entities/headquarters-entity';
+import { RegisterPurchaseDto } from '../../domain/dtos/purchase-register.dto';
 
 export class PurchaseDatasourceMysqlImpl implements PurchaseDatasource {
 
@@ -73,22 +74,33 @@ export class PurchaseDatasourceMysqlImpl implements PurchaseDatasource {
             throw CustomError.internalServer();
         }
     };
-    async registerPurchase() {
+    async registerPurchase(registarPurchaseDto: RegisterPurchaseDto):Promise<number> {
         try {
         
-            const results = await MySQLConnection.query<RowDataPacket[]>(
+            const resultPurchase = await MySQLConnection.query<ResultSetHeader>(
                 `
-                INSERT INTO Compra (id_usuario,id_tipo_compra,id_tipo_pago,id_estado,id_sede,costo_subtotal,costo_total,costo_delivery)
+                INSERT INTO Compra (id_usuario,id_tipo_compra,id_tipo_pago,id_estado,id_sede,
+                costo_subtotal,costo_total,costo_delivery)
                     VALUES (?,?,?,?,?,?,?,?);
-                INSERT INTO Detalle_Compra (id_compra,id_comida,cantidad,costo) VALUES (?,?,?,?), (?,?,?,?)
                 `,
-                []
+                [registarPurchaseDto.id_usuario, registarPurchaseDto.id_tipo_compra, registarPurchaseDto.id_tipo_pago, registarPurchaseDto.id_estado,
+                    registarPurchaseDto.id_sede, registarPurchaseDto.costo_subtotal, registarPurchaseDto.costo_total, registarPurchaseDto.costo_delivery
+                ]
             );
 
+            // let sqlString = 'INSERT INTO Detalle_Compra (id_compra,id_comida,cantidad,costo) VALUES ';
+            registarPurchaseDto.lista_comidas.forEach( async (v)=>{
 
-            // const typesPaymentList = results as PaymentTypeEntity[];
+                // sqlString += '(' + resultPurchase.insertId + ',';
+                await MySQLConnection.query<ResultSetHeader>(
+                    `
+                    INSERT INTO Detalle_Compra (id_compra,id_comida,cantidad,costo) VALUES (?,?,?,?);
+                    `,
+                    [resultPurchase.insertId, v.id_comida, v.cantidad, v.costo]
+                );
+            })
 
-            // return typesPaymentList;
+            return resultPurchase.insertId;
         }
         catch (error) {
             if (error instanceof CustomError){

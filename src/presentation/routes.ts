@@ -40,6 +40,7 @@ export class AppRoutes{
             res.header("Access-Control-Allow-Headers", "Content-Type");
             res.status(204).send('Options');
         });
+        
         router.post('/api/auth/login', authController.loginUser);
         router.post('/api/auth/register', authController.registerUser);
 
@@ -48,6 +49,7 @@ export class AppRoutes{
         router.get('/api/purchase/typesPayment', purchaseController.typesPayment);
         router.get('/api/purchase/typesPruchase', purchaseController.typesPurchase);
         router.get('/api/purchase/:id', purchaseController.getPurchase);
+        router.post('/api/purchase/', purchaseController.registerPurchase);
 
         router.get('/api/shared/headquarters', sharedController.headquarters);
         router.get('/api/shared/states', sharedController.states);
