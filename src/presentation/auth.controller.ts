@@ -1,6 +1,7 @@
 import { Request, Response } from "express"
 import { AuthRepository, CustomError, RegisterUserDto } from "../domain";
 import { LoginUserDto } from "../domain/dtos/login-user.dto";
+import { ChangePasswordDto } from "../domain/dtos/change-password.dto";
 // import { AuthRepository, CustomError, RegisterUserDto } from "../../domain";
 
 // creamos una clase controlador
@@ -48,4 +49,18 @@ export class AuthController{
             .then(user => res.json(user))
             .catch(error => this.handleError(error, res));
     }
+
+    changePassword = async (req: Request, res: Response) => {
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Methods", "PUT");
+        res.header("Access-Control-Allow-Headers", "Content-Type");
+    
+        const [error, changePasswordDto] = ChangePasswordDto.create(req.body);
+        if (error) return res.status(400).json({ error });
+    
+        this.authRepostory.changePassword(changePasswordDto!)
+            .then(response => res.json(response))
+            .catch(error => this.handleError(error, res));
+    };
+
 }
