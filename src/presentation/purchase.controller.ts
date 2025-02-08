@@ -59,7 +59,18 @@ export class PurchaseController{
         const {id} = req.params;
 
         this.purchaseRepostory.getPurchase(Number(id))
-            .then(typesPayment => res.json(typesPayment))
+            .then(purchase => res.json(purchase))
+            .catch(error => this.handleError(error, res));
+    }
+
+    getListPurchase = async(req: Request, res:Response) => {
+
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Methods", "GET");
+        res.header("Access-Control-Allow-Headers", "Content-Type");
+
+        this.purchaseRepostory.getListPurchase()
+            .then(listPurchase => res.json(listPurchase))
             .catch(error => this.handleError(error, res));
     }
 

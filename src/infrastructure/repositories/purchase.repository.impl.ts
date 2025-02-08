@@ -1,4 +1,5 @@
 import { PurchaseDatasource } from '../../domain/datasources/purchase.datasource';
+import { PurchaseListDto } from '../../domain/dtos/purchase-list.dto';
 import { RegisterPurchaseDto } from '../../domain/dtos/purchase-register.dto';
 import { UpdateStatePurchaseDto } from '../../domain/dtos/purchase-update.dto';
 import { PaymentTypeEntity } from '../../domain/entities/payment-type-entity';
@@ -19,6 +20,9 @@ export class PurchaseRepositoryImpl implements PurchaseRepository{
     }
     getPurchase(id:number) {
         return this.purchaseDatasource.getPurchase(id);
+    }
+    getListPurchase():Promise<PurchaseListDto[]>{
+        return this.purchaseDatasource.getListPurchase();
     }
     getTypesPayment(): Promise<PaymentTypeEntity[]> {
         return this.purchaseDatasource.getTypesPayment();
