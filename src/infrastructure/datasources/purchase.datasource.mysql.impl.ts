@@ -12,6 +12,7 @@ import { RegisterPurchaseDto } from '../../domain/dtos/purchase-register.dto';
 import { UpdateStatePurchaseDto } from '../../domain/dtos/purchase-update.dto';
 import { FoodResponseDto } from '../../domain/dtos/food-response-detail.dto';
 import { UserResponseDto } from '../../domain/dtos/user-response.dto';
+import { PurchaseListDto } from '../../domain/dtos/purchase-list.dto';
 
 export class PurchaseDatasourceMysqlImpl implements PurchaseDatasource {
 
@@ -19,10 +20,10 @@ export class PurchaseDatasourceMysqlImpl implements PurchaseDatasource {
     }
     async getPurchase(id: number):Promise<PurchaseEntity> {
         try {
-            console.log('antes');
+            
             const results = await MySQLConnection.query<RowDataPacket[]>(
                 `
-                SELECT c.id_compra,c.id_usuario,c.id_tipo_compra,c.id_tipo_pago,c.id_estado,
+                SELECT c.id_compra,c.id_usuario,c.id_tipo_compra,c.id_tipo_pago,c.id_estado,c.fecha,
                 c.id_sede,c.costo_subtotal,c.costo_total,c.costo_delivery,
                 u.tipo_usuario,u.nombre,u.correo,u.direccion,
                 tc.tipo_compra,tp.tipo_pago,e.tipo_estado,s.sede,
@@ -41,8 +42,12 @@ export class PurchaseDatasourceMysqlImpl implements PurchaseDatasource {
                 [id]
             );
             
+            if (results.length == 0){
+                throw CustomError.badRequest("Compra no encontrada");
+            }
+
             let listFood : FoodResponseDto[] = [];
-            results.forEach( (v)=> {
+            results.forEach((v)=> {
                 listFood.push(new FoodResponseDto(
                     v['id_comida'],
                     v['comida'],
@@ -67,12 +72,13 @@ export class PurchaseDatasourceMysqlImpl implements PurchaseDatasource {
                 new PaymentTypeEntity(results[0]['id_tipo_pago'],results[0]['tipo_pago']),
                 new StateEntity(results[0]['id_estado'],results[0]['tipo_estado']),
                 new HeadquartersEntity(results[0]['id_sede'],results[0]['sede']),
+                new Date(new Date(results[0]['fecha'] ?? new Date().valueOf()).valueOf() - new Date().getTimezoneOffset()*60000),
                 Number(results[0]['costo_subtotal']),
                 Number(results[0]['costo_total']),
                 Number(results[0]['costo_delivery']),
                 listFood,
             );
-            // console.log(purchase)
+            
             return purchase;
         }
         catch (error) {
@@ -82,17 +88,53 @@ export class PurchaseDatasourceMysqlImpl implements PurchaseDatasource {
             throw CustomError.internalServer();
         }
     };
+
+    async getListPurchase():Promise<PurchaseListDto[]> {
+
+        const results = await MySQLConnection.query<RowDataPacket[]>(
+            `
+            SELECT c.id_compra,c.id_usuario,c.id_tipo_compra,c.id_tipo_pago,c.id_estado,c.fecha,
+            c.id_sede,c.costo_subtotal,c.costo_total,c.costo_delivery,
+            tc.tipo_compra,tp.tipo_pago,e.tipo_estado,s.sede
+            FROM Compra c
+            INNER JOIN Tipo_Compra tc on tc.id_tipo_compra = c.id_tipo_compra
+            INNER JOIN Tipo_Pago tp on tp.id_tipo_pago = c.id_tipo_pago
+            INNER JOIN Estado e on e.id_estado = c.id_estado
+            INNER JOIN Sede s on s.id_sede = c.id_sede
+            ORDER BY c.id_compra DESC;
+            `,
+        );
+
+        let listPurchase:PurchaseListDto[] = [];
+
+        results.forEach( (v)=> {
+            listPurchase.push(new PurchaseListDto(
+                Number(v['id_compra']),
+                Number(v['id_usuario']),
+                new PurchaseTypeEntity(v['id_tipo_compra'],v['tipo_compra']),
+                new PaymentTypeEntity(v['id_tipo_pago'],v['tipo_pago']),
+                new StateEntity(v['id_estado'],v['tipo_estado']),
+                new HeadquartersEntity(v['id_sede'],v['sede']),
+                Number(v['costo_total']),
+                new Date(new Date(v['fecha'] ?? new Date().valueOf()).valueOf() - new Date().getTimezoneOffset()*60000),
+            ));
+        });
+
+        return listPurchase;
+    }
+
     async registerPurchase(registarPurchaseDto: RegisterPurchaseDto):Promise<number> {
         try {
         
             const resultPurchase = await MySQLConnection.query<ResultSetHeader>(
                 `
                 INSERT INTO Compra (id_usuario,id_tipo_compra,id_tipo_pago,id_estado,id_sede,
-                costo_subtotal,costo_total,costo_delivery)
-                    VALUES (?,?,?,?,?,?,?,?);
+                costo_subtotal,costo_total,costo_delivery,fecha)
+                    VALUES (?,?,?,?,?,?,?,?,?);
                 `,
-                [registarPurchaseDto.id_usuario, registarPurchaseDto.id_tipo_compra, registarPurchaseDto.id_tipo_pago, registarPurchaseDto.id_estado,
-                    registarPurchaseDto.id_sede, registarPurchaseDto.costo_subtotal, registarPurchaseDto.costo_total, registarPurchaseDto.costo_delivery
+                [registarPurchaseDto.id_usuario, registarPurchaseDto.id_tipo_compra, registarPurchaseDto.id_tipo_pago, 
+                    registarPurchaseDto.id_estado,registarPurchaseDto.id_sede, registarPurchaseDto.costo_subtotal, 
+                    registarPurchaseDto.costo_total, registarPurchaseDto.costo_delivery,new Date()
                 ]
             );
 

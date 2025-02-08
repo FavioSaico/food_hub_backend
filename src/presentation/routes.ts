@@ -49,6 +49,7 @@ export class AppRoutes{
         router.get('/api/purchase/typesPayment', purchaseController.typesPayment);
         router.get('/api/purchase/typesPruchase', purchaseController.typesPurchase);
         router.get('/api/purchase/:id', purchaseController.getPurchase);
+        router.get('/api/purchase/', purchaseController.getListPurchase);
         router.post('/api/purchase/', purchaseController.registerPurchase);
         router.put('/api/purchase/', purchaseController.updateStatePurchase);
 
