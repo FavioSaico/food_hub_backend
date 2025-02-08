@@ -6,9 +6,9 @@ export class RegisterReserveDto{
         public id_sede: number,
         public id_estado: number,
         public id_zona: number,
-        public fecha: number,
+        public fecha: string,
         public cantidad_personas: number,
-        public requerimientos: number,
+        public requerimientos: string,
     ){
         
     }
@@ -22,7 +22,7 @@ export class RegisterReserveDto{
         if (!id_zona) return ['Debe ingresar la zona'];
         if (!fecha) return ['Debe ingresar la fecha'];
         if (!cantidad_personas) return ['Debe ingresar la cantidad de personas'];
-        if (cantidad_personas < 0) return ['La cantidad de personas debe ser mayor a cero'];
+        if (cantidad_personas <= 0) return ['La cantidad de personas debe ser mayor a cero'];
 
         return [ 
             undefined, // mensaje de error

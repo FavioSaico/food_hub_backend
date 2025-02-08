@@ -1,14 +1,14 @@
 import { Request, Response } from "express"
 import { CustomError } from "../domain";
-import { PurchaseRepositoryImpl } from "../infrastructure";
 import { RegisterPurchaseDto } from "../domain/dtos/purchase-register.dto";
 import { UpdateStatePurchaseDto } from "../domain/dtos/purchase-update.dto";
+import { PurchaseRepository } from "../domain/repositories/purchase.repository";
 
 // creamos una clase controlador
 export class PurchaseController{
 
     constructor (
-        private readonly purchaseRepostory: PurchaseRepositoryImpl,
+        private readonly purchaseRepostory: PurchaseRepository,
     ){}
 
     private handleError = ( error: unknown, res: Response ) => {

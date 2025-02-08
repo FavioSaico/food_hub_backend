@@ -15,6 +15,7 @@ class MySQLConnection {
                 password: envs.MYSQL_PASS
             });
             const [results] = await connection.execute<T>(sql, params);
+            
             return results;
         } finally {
             if (connection) {

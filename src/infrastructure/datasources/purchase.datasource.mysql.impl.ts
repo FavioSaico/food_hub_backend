@@ -90,37 +90,43 @@ export class PurchaseDatasourceMysqlImpl implements PurchaseDatasource {
     };
 
     async getListPurchase():Promise<PurchaseListDto[]> {
-
-        const results = await MySQLConnection.query<RowDataPacket[]>(
-            `
-            SELECT c.id_compra,c.id_usuario,c.id_tipo_compra,c.id_tipo_pago,c.id_estado,c.fecha,
-            c.id_sede,c.costo_subtotal,c.costo_total,c.costo_delivery,
-            tc.tipo_compra,tp.tipo_pago,e.tipo_estado,s.sede
-            FROM Compra c
-            INNER JOIN Tipo_Compra tc on tc.id_tipo_compra = c.id_tipo_compra
-            INNER JOIN Tipo_Pago tp on tp.id_tipo_pago = c.id_tipo_pago
-            INNER JOIN Estado e on e.id_estado = c.id_estado
-            INNER JOIN Sede s on s.id_sede = c.id_sede
-            ORDER BY c.id_compra DESC;
-            `,
-        );
-
-        let listPurchase:PurchaseListDto[] = [];
-
-        results.forEach( (v)=> {
-            listPurchase.push(new PurchaseListDto(
-                Number(v['id_compra']),
-                Number(v['id_usuario']),
-                new PurchaseTypeEntity(v['id_tipo_compra'],v['tipo_compra']),
-                new PaymentTypeEntity(v['id_tipo_pago'],v['tipo_pago']),
-                new StateEntity(v['id_estado'],v['tipo_estado']),
-                new HeadquartersEntity(v['id_sede'],v['sede']),
-                Number(v['costo_total']),
-                new Date(new Date(v['fecha'] ?? new Date().valueOf()).valueOf() - new Date().getTimezoneOffset()*60000),
-            ));
-        });
-
-        return listPurchase;
+        try {
+            const results = await MySQLConnection.query<RowDataPacket[]>(
+                `
+                SELECT c.id_compra,c.id_usuario,c.id_tipo_compra,c.id_tipo_pago,c.id_estado,c.fecha,
+                c.id_sede,c.costo_subtotal,c.costo_total,c.costo_delivery,
+                tc.tipo_compra,tp.tipo_pago,e.tipo_estado,s.sede
+                FROM Compra c
+                INNER JOIN Tipo_Compra tc on tc.id_tipo_compra = c.id_tipo_compra
+                INNER JOIN Tipo_Pago tp on tp.id_tipo_pago = c.id_tipo_pago
+                INNER JOIN Estado e on e.id_estado = c.id_estado
+                INNER JOIN Sede s on s.id_sede = c.id_sede
+                ORDER BY c.id_compra DESC;
+                `,
+            );
+    
+            let listPurchase:PurchaseListDto[] = [];
+    
+            results.forEach( (v)=> {
+                listPurchase.push(new PurchaseListDto(
+                    Number(v['id_compra']),
+                    Number(v['id_usuario']),
+                    new PurchaseTypeEntity(v['id_tipo_compra'],v['tipo_compra']),
+                    new PaymentTypeEntity(v['id_tipo_pago'],v['tipo_pago']),
+                    new StateEntity(v['id_estado'],v['tipo_estado']),
+                    new HeadquartersEntity(v['id_sede'],v['sede']),
+                    Number(v['costo_total']),
+                    new Date(new Date(v['fecha'] ?? new Date().valueOf()).valueOf() - new Date().getTimezoneOffset()*60000),
+                ));
+            });
+    
+            return listPurchase;
+        } catch (error) {
+            if (error instanceof CustomError){
+                throw error;
+            }
+            throw CustomError.internalServer();
+        }
     }
 
     async registerPurchase(registarPurchaseDto: RegisterPurchaseDto):Promise<number> {
@@ -163,7 +169,16 @@ export class PurchaseDatasourceMysqlImpl implements PurchaseDatasource {
     async updateStatePurchase(updatePurchaseDto: UpdateStatePurchaseDto):Promise<number>{
 
         try {
-        
+            
+            const results = await MySQLConnection.query<RowDataPacket[]>(
+                `SELECT * FROM Compra WHERE id_compra = ?;`,
+                [updatePurchaseDto.id_compra]
+            );
+
+            if(results.length == 0){
+                throw CustomError.badRequest("Compra no econtrada");
+            }
+
             const resultPurchase = await MySQLConnection.query<OkPacket>(
                 "UPDATE Compra SET id_estado = ? WHERE id_compra = ? ;",
                 [updatePurchaseDto.id_estado, updatePurchaseDto.id_compra]

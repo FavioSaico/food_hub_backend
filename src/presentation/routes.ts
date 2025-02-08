@@ -11,6 +11,9 @@ import { PurchaseController } from "./purchase.controller";
 import { SharedDatasourceMysqlImpl } from "../infrastructure/datasources/shared.datasource.mysql.impl";
 import { SharedRepositoryImpl } from "../infrastructure/repositories/shared.repository.impl";
 import { SharedController } from "./shared.controller";
+import { ReserveDatasourceMysqlImpl } from "../infrastructure/datasources/reserve.datasource.mysql.impl";
+import { ReserveRepositoryImpl } from "../infrastructure/repositories/reserve.repository.impl";
+import { ReserveController } from "./reserver.controller";
 export class AppRoutes{
 
     static get routes(): Router{
@@ -28,6 +31,10 @@ export class AppRoutes{
         const purchaseDatasourceMysql = new PurchaseDatasourceMysqlImpl();
         const purchaseRepository = new PurchaseRepositoryImpl(purchaseDatasourceMysql);
         const purchaseController = new PurchaseController(purchaseRepository);
+
+        const reserveDatasourceMysql = new ReserveDatasourceMysqlImpl();
+        const reserveRepository = new ReserveRepositoryImpl(reserveDatasourceMysql);
+        const reserveController = new ReserveController(reserveRepository);
 
         const sharedDatasourceMysql = new SharedDatasourceMysqlImpl();
         const sharedRepository = new SharedRepositoryImpl(sharedDatasourceMysql);
@@ -53,6 +60,12 @@ export class AppRoutes{
         router.get('/api/purchase/', purchaseController.getListPurchase);
         router.post('/api/purchase/', purchaseController.registerPurchase);
         router.put('/api/purchase/', purchaseController.updateStatePurchase);
+
+        router.get('/api/reserve/:id', reserveController.getReserve);
+        router.get('/api/reserve/', reserveController.getListReserve);
+        router.post('/api/reserve/', reserveController.registerReserve);
+        router.put('/api/reserve/', reserveController.updateStateReserve);
+        router.get('/api/zone', reserveController.getZones);
 
         router.get('/api/shared/headquarters', sharedController.headquarters);
         router.get('/api/shared/states', sharedController.states);
