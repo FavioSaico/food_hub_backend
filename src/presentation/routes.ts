@@ -43,7 +43,8 @@ export class AppRoutes{
 
         router.post('/api/auth/login', authController.loginUser);
         router.post('/api/auth/register', authController.registerUser);
-
+        router.put('/api/auth/changepassword', authController.changePassword);
+        
         router.get('/api/food', foodController.foodList);
 
         router.get('/api/purchase/typesPayment', purchaseController.typesPayment);
