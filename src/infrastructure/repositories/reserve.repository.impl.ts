@@ -9,23 +9,27 @@ import { ReserveRepository } from "../../domain/repositories/reserve.repository"
 export class ReserveRepositoryImpl implements ReserveRepository{
 
     constructor(
-        private readonly reserverDatasource: ReserveDatasource
+        private readonly reserveDatasource: ReserveDatasource
     ){}
 
+    getListReserveUser(id_usuario: number): Promise<ReserveListDto[]> {
+        return this.reserveDatasource.getListReserveUser(id_usuario);
+    }
+
     getReserve(id: number): Promise<ReserveEntity> {
-        return this.reserverDatasource.getReserve(id);
+        return this.reserveDatasource.getReserve(id);
     }
     getListReserve(): Promise<ReserveListDto[]> {
-        return this.reserverDatasource.getListReserve();
+        return this.reserveDatasource.getListReserve();
     }
     registerReserve(registerReserveDto: RegisterReserveDto): Promise<number> {
-        return this.reserverDatasource.registerReserve(registerReserveDto);
+        return this.reserveDatasource.registerReserve(registerReserveDto);
     }
     updateStateReserve(updatePurchaseDto: UpdateStateReserveDto): Promise<number> {
-        return this.reserverDatasource.updateStateReserve(updatePurchaseDto);
+        return this.reserveDatasource.updateStateReserve(updatePurchaseDto);
     }
     getZone(id_sede: number): Promise<ZoneEntity[]> {
-        return this.reserverDatasource.getZone(id_sede);
+        return this.reserveDatasource.getZone(id_sede);
     }
     
     

@@ -10,6 +10,8 @@ export abstract class ReserveRepository{
 
     abstract getListReserve():Promise<ReserveListDto[]>;
 
+    abstract getListReserveUser(id_usuario: number):Promise<ReserveListDto[]>;
+
     abstract registerReserve(registaReserveDto: RegisterReserveDto):Promise<number>;
 
     abstract updateStateReserve(updatePurchaseDto: UpdateStateReserveDto):Promise<number>;

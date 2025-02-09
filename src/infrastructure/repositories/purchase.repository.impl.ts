@@ -12,6 +12,9 @@ export class PurchaseRepositoryImpl implements PurchaseRepository{
     constructor(
         private readonly purchaseDatasource: PurchaseDatasource
     ){}
+    getListPurchaseUser(id_usuario: number): Promise<PurchaseListDto[]> {
+        return this.purchaseDatasource.getListPurchaseUser(id_usuario);
+    }
     updateStatePurchase(updatePurchaseDto: UpdateStatePurchaseDto): Promise<number> {
         return this.purchaseDatasource.updateStatePurchase(updatePurchaseDto);
     }

@@ -11,6 +11,8 @@ export abstract class PurchaseDatasource{
 
     abstract getListPurchase():Promise<PurchaseListDto[]>;
 
+    abstract getListPurchaseUser(id_usuario: number):Promise<PurchaseListDto[]>;
+
     abstract registerPurchase(registarPurchaseDto: RegisterPurchaseDto):Promise<number>;
 
     abstract updateStatePurchase(updatePurchaseDto: UpdateStatePurchaseDto):Promise<number>;

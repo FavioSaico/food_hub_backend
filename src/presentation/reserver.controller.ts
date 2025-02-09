@@ -28,7 +28,7 @@ export class ReserveController{
         res.header("Access-Control-Allow-Methods", "GET");
         res.header("Access-Control-Allow-Headers", "Content-Type");
 
-        const {id} = req.params;
+        const { id } = req.params;
 
         this.reserveRepostory.getReserve(Number(id))
             .then(reserve => res.json(reserve))
@@ -43,6 +43,19 @@ export class ReserveController{
 
         this.reserveRepostory.getListReserve()
             .then(listReserve => res.json(listReserve))
+            .catch(error => this.handleError(error, res));
+    }
+
+    getListReserveUser = async(req: Request, res:Response) => {
+    
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Methods", "GET");
+        res.header("Access-Control-Allow-Headers", "Content-Type");
+        
+        const { id } = req.params;
+
+        this.reserveRepostory.getListReserveUser(Number(id))
+            .then(listReserveUser => res.json(listReserveUser))
             .catch(error => this.handleError(error, res));
     }
 

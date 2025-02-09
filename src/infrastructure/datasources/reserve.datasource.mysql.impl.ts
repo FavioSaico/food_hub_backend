@@ -61,7 +61,8 @@ export class ReserveDatasourceMysqlImpl implements ReserveDatasource{
                 e.tipo_estado, s.sede
                 FROM Reserva r 
                 INNER JOIN Estado e on e.id_estado = r.id_estado
-                INNER JOIN Sede s on s.id_sede = r.id_sede;`,
+                INNER JOIN Sede s on s.id_sede = r.id_sede
+                ORDER BY r.id_reserva DESC;`,
             );
             let listReserve : ReserveListDto[] = [];
     
@@ -83,6 +84,40 @@ export class ReserveDatasourceMysqlImpl implements ReserveDatasource{
             throw CustomError.internalServer();
         }
     }
+
+    async getListReserveUser(id_usuario:number): Promise<ReserveListDto[]> {
+        try {
+            const results = await MySQLConnection.query<RowDataPacket[]>(
+                `SELECT r.id_reserva, r.id_usuario, r.id_sede, r.id_estado, r.fecha,
+                e.tipo_estado, s.sede
+                FROM Reserva r 
+                INNER JOIN Estado e on e.id_estado = r.id_estado
+                INNER JOIN Sede s on s.id_sede = r.id_sede
+                WHERE r.id_usuario = ?
+                ORDER BY r.id_reserva DESC;`,
+                [id_usuario]
+            );
+            let listReserve : ReserveListDto[] = [];
+    
+            results.forEach( (v)=> {
+                listReserve.push(new ReserveListDto(
+                    Number(v['id_reserva']),
+                    Number(v['id_usuario']),
+                    new HeadquartersEntity(v['id_sede'],v['sede']),
+                    new StateEntity(v['id_estado'],v['tipo_estado']),
+                    new Date(new Date(v['fecha'] ?? new Date().valueOf()).valueOf() - new Date().getTimezoneOffset()*60000),
+                ));
+            });
+    
+            return listReserve;
+        } catch (error) {
+            if (error instanceof CustomError){
+                throw error;
+            }
+            throw CustomError.internalServer();
+        }
+    }
+
     async registerReserve(registaReserveDto: RegisterReserveDto): Promise<number> {
         try {
 

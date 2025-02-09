@@ -58,11 +58,13 @@ export class AppRoutes{
         router.get('/api/purchase/typesPruchase', purchaseController.typesPurchase);
         router.get('/api/purchase/:id', purchaseController.getPurchase);
         router.get('/api/purchase/', purchaseController.getListPurchase);
+        router.get('/api/purchase/user/:id', purchaseController.getListPurchaseUser);
         router.post('/api/purchase/', purchaseController.registerPurchase);
         router.put('/api/purchase/', purchaseController.updateStatePurchase);
 
         router.get('/api/reserve/:id', reserveController.getReserve);
         router.get('/api/reserve/', reserveController.getListReserve);
+        router.get('/api/reserve/user/:id', reserveController.getListReserveUser);
         router.post('/api/reserve/', reserveController.registerReserve);
         router.put('/api/reserve/', reserveController.updateStateReserve);
         router.get('/api/zone', reserveController.getZones);
