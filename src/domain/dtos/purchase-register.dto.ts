@@ -35,7 +35,7 @@ export class RegisterPurchaseDto{
         if (!id_sede) return ['Debe ingresar la sede'];
         if (Number(costo_subtotal) < 0) return ['El subtotal debe ser mayor a 0'];
         if (Number(costo_total) < 0) return ['El total debe ser mayor a 0'];
-        if (Number(costo_delivery) <= 0) return ['El costo por delivery debe ser igual o mayor a 0'];
+        if (Number(costo_delivery) < 0) return ['El costo por delivery debe ser igual o mayor a 0'];
         if (lista_comidas.length <= 0) return ['Debe ingresar una lista de comidas'];
 
         return [ 
