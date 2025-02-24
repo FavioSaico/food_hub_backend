@@ -15,7 +15,7 @@ export class SharedDatasourceMysqlImpl implements SharedDatasource{
         try {
         
             const results = await MySQLConnection.query<HeadquartersEntity[] & RowDataPacket[]>(
-                "SELECT * FROM Sede"
+                "SELECT * FROM sede"
             );
 
             const typesPaymentList = results as HeadquartersEntity[];
@@ -34,7 +34,7 @@ export class SharedDatasourceMysqlImpl implements SharedDatasource{
         try {
         
             const results = await MySQLConnection.query<StateEntity[] & RowDataPacket[]>(
-                "SELECT * FROM Estado"
+                "SELECT * FROM estado"
             );
 
             const typesPaymentList = results as StateEntity[];
