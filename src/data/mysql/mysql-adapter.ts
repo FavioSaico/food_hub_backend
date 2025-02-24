@@ -7,6 +7,7 @@ import { envs } from "../../config";
 class MySQLConnection {
     async query<T extends RowDataPacket[] | ResultSetHeader | OkPacket>(sql: string, params: any[] = []): Promise<T> {
         let connection: Connection | null = null;
+        sql = sql.toLowerCase();
         try {
             connection = await MysqlDatabase.connect({
                 host: envs.MYSQL_HOST,
