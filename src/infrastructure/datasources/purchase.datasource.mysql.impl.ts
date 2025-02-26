@@ -1,11 +1,10 @@
-import { CustomError, UserEntity } from '../../domain';
+import { CustomError } from '../../domain';
 import MySQLConnection from "../../data/mysql/mysql-adapter";
 import { ResultSetHeader, RowDataPacket, OkPacket } from 'mysql2/promise';
 import { PurchaseDatasource } from '../../domain/datasources/purchase.datasource';
 import { PaymentTypeEntity } from '../../domain/entities/payment-type-entity';
 import { PurchaseTypeEntity } from '../../domain/entities/purchase-type-entity';
 import { PurchaseEntity } from '../../domain/entities/purchase-entity';
-import { FoodEntity } from '../../domain/entities/food-entity';
 import { StateEntity } from '../../domain/entities/state-entity';
 import { HeadquartersEntity } from '../../domain/entities/headquarters-entity';
 import { RegisterPurchaseDto } from '../../domain/dtos/purchase-register.dto';
