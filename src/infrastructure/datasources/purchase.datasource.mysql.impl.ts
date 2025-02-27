@@ -181,14 +181,12 @@ export class PurchaseDatasourceMysqlImpl implements PurchaseDatasource {
                 `,
                 [registarPurchaseDto.id_usuario, registarPurchaseDto.id_tipo_compra, registarPurchaseDto.id_tipo_pago, 
                     registarPurchaseDto.id_estado,registarPurchaseDto.id_sede, registarPurchaseDto.costo_subtotal, 
-                    registarPurchaseDto.costo_total, registarPurchaseDto.costo_delivery,new Date()
+                    registarPurchaseDto.costo_total, registarPurchaseDto.costo_delivery,new Date(new Date().valueOf()-new Date().getTimezoneOffset()*60000)
                 ]
             );
 
-            // let sqlString = 'INSERT INTO Detalle_Compra (id_compra,id_comida,cantidad,costo) VALUES ';
             registarPurchaseDto.lista_comidas.forEach( async (v)=>{
 
-                // sqlString += '(' + resultPurchase.insertId + ',';
                 await MySQLConnection.query<ResultSetHeader>(
                     `
                     INSERT INTO Detalle_Compra (id_compra,id_comida,cantidad,costo) VALUES (?,?,?,?);

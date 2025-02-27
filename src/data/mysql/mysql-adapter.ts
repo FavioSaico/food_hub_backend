@@ -1,5 +1,3 @@
-// src/infrastructure/database/mysql-datasource.ts
-// import MySQLConnection from "./mysql-connection";
 import { RowDataPacket, ResultSetHeader, OkPacket, Connection } from "mysql2/promise";
 import { MysqlDatabase } from "./mysql-database";
 import { envs } from "../../config";
