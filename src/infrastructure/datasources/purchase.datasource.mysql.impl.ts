@@ -177,11 +177,11 @@ export class PurchaseDatasourceMysqlImpl implements PurchaseDatasource {
                 `
                 INSERT INTO Compra (id_usuario,id_tipo_compra,id_tipo_pago,id_estado,id_sede,
                 costo_subtotal,costo_total,costo_delivery,fecha)
-                    VALUES (?,?,?,?,?,?,?,?,?);
+                    VALUES (?,?,?,?,?,?,?,?,NOW());
                 `,
                 [registarPurchaseDto.id_usuario, registarPurchaseDto.id_tipo_compra, registarPurchaseDto.id_tipo_pago, 
                     registarPurchaseDto.id_estado,registarPurchaseDto.id_sede, registarPurchaseDto.costo_subtotal, 
-                    registarPurchaseDto.costo_total, registarPurchaseDto.costo_delivery,new Date(new Date().valueOf()-new Date().getTimezoneOffset()*60000)
+                    registarPurchaseDto.costo_total, registarPurchaseDto.costo_delivery
                 ]
             );
 
